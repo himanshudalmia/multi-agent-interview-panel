@@ -10,28 +10,28 @@ The simulator features structured fact extraction, **4 strictly independent agen
 
 ```mermaid
 graph TD
-    A[PDF Input Data<br/>Job Description, Resumes, Transcripts] --> B[1. Profile Builder<br/>1 Gemini Call]
-    B --> C[Structured Candidate Profile]
+    A["PDF Input Data<br/>Job Description, Resumes, Transcripts"] --> B["1. Profile Builder<br/>1 Gemini Call"]
+    B --> C["Structured Candidate Profile"]
     
-    C --> D1[Technical Lead Agent<br/>Dr. Alex Vance]
-    C --> D2[HR Culture Agent<br/>Sarah Jenkins]
-    C --> D3[Hiring Manager Agent<br/>Marcus Brody]
-    C --> D4[Skeptic Agent<br/>Victor Vance]
+    C --> D1["Technical Lead Agent<br/>Dr. Alex Vance"]
+    C --> D2["HR Culture Agent<br/>Sarah Jenkins"]
+    C --> D3["Hiring Manager Agent<br/>Marcus Brody"]
+    C --> D4["Skeptic Agent<br/>Victor Vance"]
     
-    subgraph Stage 2: Independent Agent Evaluations (0 Cross-Visibility)
+    subgraph STAGE2 ["Stage 2: Independent Agent Evaluations - Zero Cross-Visibility"]
         D1
         D2
         D3
         D4
     end
     
-    D1 --> E[3. Multi-Turn Panel Debate<br/>Cross-Examination & Score Tracking]
+    D1 --> E["3. Multi-Turn Panel Debate<br/>Cross-Examination & Score Tracking"]
     D2 --> E
     D3 --> E
     D4 --> E
     
-    E --> F[4. Judicial Adjudicator<br/>Step-by-Step Evidence Weighing]
-    F --> G[5. Report Generator<br/>output/candidate_X_report.md]
+    E --> F["4. Judicial Adjudicator<br/>Step-by-Step Evidence Weighing"]
+    F --> G["5. Report Generator<br/>output/candidate_X_report.md"]
 ```
 
 ---
