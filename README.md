@@ -141,6 +141,13 @@ Run the end-to-end multi-agent pipeline from terminal:
 python main.py
 ```
 
+### Option 3: Run Unit Tests (Fast & Offline)
+Run unit tests with pytest:
+
+```bash
+pytest
+```
+
 ### Generated Output Reports
 The pipeline reads input PDFs from `data/` (`02_Job_Description.pdf`, candidate resumes, and interview transcripts) and writes candidate evaluation reports to:
 - [`output/candidate_A_report.md`](file:///c:/Users/User/Desktop/PromptWars/multi-agent-interview-panel/output/candidate_A_report.md)
