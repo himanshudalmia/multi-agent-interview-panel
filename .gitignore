@@ -1,0 +1,22 @@
+# Environment variables
+.env
+
+# Virtual environment
+venv/
+.venv/
+env/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Output directories
+output/
+scratch/
+
+# IDE / Editor settings
+.vscode/
+.idea/
+*.swp
