@@ -124,23 +124,23 @@ def run_debate(
             previous_turns_summary = "No previous debate turns yet."
 
         prompt = f"""
-You are simulating a turn-based panel debate for hiring '{candidate_name}'.
-You are now speaking strictly as the **{speaker_role}**.
+You are simulating a dynamic, turn-based panel debate for hiring '{candidate_name}'.
+You are speaking strictly as the **{speaker_role}**.
 
 TARGET TO ADDRESS: **{target_role}**
-TOPIC: {topic}
+TOPIC UNDER DEBATE: {topic}
 
---- SPEAKER'S INITIAL OPINION ({speaker_role}) ---
-Score: {speaker_initial.score}/10 | Confidence: {speaker_initial.confidence}
-Opinion: {speaker_initial.opinion}
-Evidence Quotes: {[q.model_dump() for q in speaker_initial.evidence_quotes]}
+--- YOUR CURRENT POSITION ({speaker_role}) ---
+Current Score: {prev_score}/10 | Current Confidence: {current_confidences[speaker_role]}
+Initial Assessment: {speaker_initial.opinion}
+Initial Evidence Quotes: {[q.model_dump() for q in speaker_initial.evidence_quotes]}
 
---- TARGET AGENT'S INITIAL OPINION ({target_role}) ---
-Score: {target_initial.score}/10 | Confidence: {target_initial.confidence}
-Opinion: {target_initial.opinion}
-Evidence Quotes: {[q.model_dump() for q in target_initial.evidence_quotes]}
+--- TARGET AGENT'S POSITION ({target_role}) ---
+Current Score: {current_scores.get(target_role, target_initial.score)}/10 | Current Confidence: {current_confidences.get(target_role, target_initial.confidence)}
+Initial Assessment: {target_initial.opinion}
+Initial Evidence Quotes: {[q.model_dump() for q in target_initial.evidence_quotes]}
 
---- PREVIOUS DEBATE TURNS SO FAR ---
+--- DEBATE HISTORY SO FAR ---
 {previous_turns_summary}
 
 --- CANDIDATE PROFILE & EVIDENCE ---
@@ -148,11 +148,12 @@ Profile: {profile_str}
 Resume Text: {resume_text}
 Transcript Text: {transcript_text}
 
-TASK FOR {speaker_role}:
-1. Address the target agent ({target_role}) directly on the topic.
-2. Evaluate their points and compare with transcript/resume evidence.
-3. Decide if you maintain your score ({prev_score}) or change it based on the evidence discussed.
-4. Output your response structured according to schema. Include whether changed_opinion is True/False, your previous score ({prev_score}), and your new score.
+INSTRUCTIONS FOR {speaker_role}:
+1. Address {target_role} directly on the topic, referencing specific quotes from the transcript or resume.
+2. Be an intellectually honest interviewer. You are NOT required to stubbornly defend your original score.
+3. If {target_role} or previous debate turns present compelling evidence, severe red flags, unverified claims, or counter-points that you previously missed or weighted differently, you SHOULD re-evaluate your position and adjust your score UP or DOWN.
+4. CRITICAL MANDATE: "If this argument changes your assessment, update your score and confidence accordingly; if not, explain why your original score stands."
+5. If your `new_score` differs from your `previous_score` ({prev_score}), set `changed_opinion` to true and provide the exact updated integer score in `new_score`.
 """
 
         response = client.models.generate_content(
@@ -161,7 +162,7 @@ TASK FOR {speaker_role}:
             config=types.GenerateContentConfig(
                 response_mime_type="application/json",
                 response_schema=DebateTurnLog,
-                temperature=0.3,
+                temperature=0.4,
             ),
         )
 
@@ -177,13 +178,16 @@ TASK FOR {speaker_role}:
         turn_data.target_agent = target_role
         turn_data.previous_score = prev_score
 
+        if turn_data.new_score != turn_data.previous_score:
+            turn_data.changed_opinion = True
+
         # Update current score state
         current_scores[speaker_role] = turn_data.new_score
         current_confidences[speaker_role] = turn_data.revised_confidence
 
         turn_logs.append(turn_data)
 
-        if turn_data.changed_opinion and turn_data.previous_score != turn_data.new_score:
+        if turn_data.changed_opinion or turn_data.previous_score != turn_data.new_score:
             opinion_shifts.append(
                 f"Turn {turn_idx}: {speaker_role} changed score from {turn_data.previous_score} to {turn_data.new_score} "
                 f"when addressing {target_role} on '{topic}'. Reason: {turn_data.message}"
