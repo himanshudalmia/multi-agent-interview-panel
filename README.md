@@ -127,7 +127,15 @@ GEMINI_MODEL=gemini-3.6-flash
 
 ## 🚀 How to Run
 
-Run the end-to-end multi-agent pipeline for all candidates:
+### Option 1: Interactive Streamlit Web UI
+Launch the interactive dashboard to evaluate Candidate A, Candidate B, or Both:
+
+```bash
+streamlit run streamlit_app.py
+```
+
+### Option 2: Command-Line Interface (CLI)
+Run the end-to-end multi-agent pipeline from terminal:
 
 ```bash
 python main.py
