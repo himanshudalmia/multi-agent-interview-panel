@@ -156,7 +156,9 @@ INSTRUCTIONS FOR {speaker_role}:
 5. If your `new_score` differs from your `previous_score` ({prev_score}), set `changed_opinion` to true and provide the exact updated integer score in `new_score`.
 """
 
-        response = client.models.generate_content(
+        from utils.retry_helper import generate_content_with_retry
+        response = generate_content_with_retry(
+            client=client,
             model=model,
             contents=prompt,
             config=types.GenerateContentConfig(

@@ -88,25 +88,30 @@ def process_candidate(
     # 3. Four Independent Agent Evaluations (4 fully separate Gemini calls)
     print(f"[3/5] Running 4 Independent Agent Evaluations (Zero Cross-Visibility)...")
     
+    import time
     print("      -> Running Technical Lead Agent...")
     tech_eval = evaluate_technical(
         candidate_id, profile, resume_text, transcript_text, job_description_text, client, model
     )
+    time.sleep(2)
 
     print("      -> Running HR Culture Agent...")
     hr_eval = evaluate_hr(
         candidate_id, profile, resume_text, transcript_text, job_description_text, client, model
     )
+    time.sleep(2)
 
     print("      -> Running Hiring Manager Agent...")
     hm_eval = evaluate_hiring_manager(
         candidate_id, profile, resume_text, transcript_text, job_description_text, client, model
     )
+    time.sleep(2)
 
     print("      -> Running Skeptic Agent (Red Flag Investigator)...")
     skeptic_eval = evaluate_skeptic(
         candidate_id, profile, resume_text, transcript_text, job_description_text, client, model
     )
+    time.sleep(2)
 
     initial_evaluations = {
         "Technical Lead Agent": tech_eval,

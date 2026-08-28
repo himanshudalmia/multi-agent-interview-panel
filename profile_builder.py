@@ -70,7 +70,9 @@ Extract a structured candidate profile for '{candidate_name}' based on their Res
 Extract all facts objectively. Identify candidate claims, technical skills, years of experience, notable projects, and a balanced executive summary.
 """
 
-    response = client.models.generate_content(
+    from utils.retry_helper import generate_content_with_retry
+    response = generate_content_with_retry(
+        client=client,
         model=model,
         contents=prompt,
         config=types.GenerateContentConfig(

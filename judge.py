@@ -133,7 +133,9 @@ CRITICAL INSTRUCTIONS:
 Output your step-by-step judicial verdict strictly following the required JSON schema.
 """
 
-    response = client.models.generate_content(
+    from utils.retry_helper import generate_content_with_retry
+    response = generate_content_with_retry(
+        client=client,
         model=model,
         contents=prompt,
         config=types.GenerateContentConfig(

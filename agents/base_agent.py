@@ -98,7 +98,9 @@ CRITICAL RULES:
 Provide your independent evaluation JSON strictly following the required schema.
 """
 
-        response = client.models.generate_content(
+        from utils.retry_helper import generate_content_with_retry
+        response = generate_content_with_retry(
+            client=client,
             model=self.model,
             contents=prompt,
             config=types.GenerateContentConfig(
