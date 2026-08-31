@@ -2,10 +2,8 @@
 Streamlit Web Application for Multi-Agent AI Interview Panel Simulator
 Wraps process_candidate logic to provide an interactive dashboard UI.
 """
-import os
-from pathlib import Path
 import streamlit as st
-from dotenv import load_dotenv
+from pathlib import Path
 from google import genai
 
 from utils.pdf_reader import extract_text_from_pdf
@@ -54,13 +52,8 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# Load environment
-load_dotenv()
-env_api_key = os.environ.get("GEMINI_API_KEY", "")
-
 # Sidebar Controls
 st.sidebar.title("⚙️ Simulation Settings")
-api_key_input = st.sidebar.text_input("Gemini API Key", value=env_api_key, type="password")
 
 candidate_selection = st.sidebar.radio(
     "Select Candidate(s) to Evaluate:",
@@ -108,9 +101,13 @@ candidate_configs = {
 run_button = st.button("🚀 Run Evaluation")
 
 if run_button:
-    api_key = api_key_input.strip()
+    try:
+        api_key = (st.secrets.get("GEMINI_API_KEY") or "").strip()
+    except Exception:
+        api_key = ""
+
     if not api_key:
-        st.error("⚠️ GEMINI_API_KEY is required. Please enter your API key in the sidebar or set it in `.env`.")
+        st.error("⚠️ GEMINI_API_KEY is required in Streamlit secrets (st.secrets).")
         st.stop()
 
     client = genai.Client(api_key=api_key)
